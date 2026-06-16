@@ -3,6 +3,7 @@ import { Migrator, type Migration, type MigrationProvider } from "kysely/migrati
 import { getDb, closeDb, type Database } from "./client";
 import type { Kysely } from "kysely";
 import * as migration0001 from "./migrations/0001_deploys_logs";
+import * as migration0002 from "./migrations/0002_playbook_chunks";
 
 /**
  * Static, in-code migration provider. Avoids the filesystem/ESM friction of
@@ -12,6 +13,7 @@ const provider: MigrationProvider = {
   async getMigrations(): Promise<Record<string, Migration>> {
     return {
       "0001_deploys_logs": { up: migration0001.up, down: migration0001.down },
+      "0002_playbook_chunks": { up: migration0002.up, down: migration0002.down },
     };
   },
 };

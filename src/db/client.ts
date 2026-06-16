@@ -24,13 +24,34 @@ export interface LogsTable {
   message: string;
 }
 
+/** `playbooks` table: one row per parent playbook (returned whole by retrieval). */
+export interface PlaybooksTable {
+  id: string;
+  title: string;
+  trigger: string;
+  service: Service | null;
+  body: string;
+}
+
 /**
- * The Kysely database schema. Playbook chunks (with a vector column) are added
- * in M4.
+ * `playbook_chunks` table: one row per chunk, each linked to its parent
+ * playbook. `embedding` is a pgvector(384) column, represented as its string
+ * literal (`[v1,v2,...]`) on both insert and select.
  */
+export interface PlaybookChunksTable {
+  id: string;
+  playbook_id: string;
+  chunk_index: number;
+  content: string;
+  embedding: string;
+}
+
+/** The Kysely database schema. */
 export interface Database {
   deploys: DeploysTable;
   logs: LogsTable;
+  playbooks: PlaybooksTable;
+  playbook_chunks: PlaybookChunksTable;
 }
 
 let db: Kysely<Database> | undefined;
