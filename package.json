@@ -12,6 +12,7 @@
     "migrate": "tsx src/db/migrate.ts",
     "seed": "tsx src/fixtures/seed.ts",
     "ingest": "tsx src/rag/ingest.ts",
+    "chat": "tsx src/cli/repl.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
