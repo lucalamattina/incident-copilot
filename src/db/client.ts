@@ -1,12 +1,37 @@
 import { Kysely, PostgresDialect } from "kysely";
 import pg from "pg";
 import { loadConfig } from "../config";
+import type { Service } from "../domain/services";
+import type { DeployStatus, LogLevel } from "../domain/types";
+
+/** `deploys` table: one row per release event. Mirrors the Deploy domain type. */
+export interface DeploysTable {
+  id: string;
+  service: Service;
+  timestamp: Date;
+  version: string;
+  status: DeployStatus;
+  author: string;
+  summary: string;
+}
+
+/** `logs` table: one row per log line. Mirrors the Log domain type. */
+export interface LogsTable {
+  id: string;
+  service: Service;
+  timestamp: Date;
+  level: LogLevel;
+  message: string;
+}
 
 /**
- * The Kysely database schema. Tables are added to this interface as later
- * milestones introduce them (deploys and logs in M2, playbook chunks in M4).
+ * The Kysely database schema. Playbook chunks (with a vector column) are added
+ * in M4.
  */
-export interface Database {}
+export interface Database {
+  deploys: DeploysTable;
+  logs: LogsTable;
+}
 
 let db: Kysely<Database> | undefined;
 
