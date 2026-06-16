@@ -17,6 +17,7 @@
     "eval:tier2:verdicts": "tsx src/eval/tierTwo/verdicts.ts",
     "eval:tier2": "tsx src/eval/tierTwo/sampling.ts",
     "eval:tier2:calibrate": "tsx src/eval/tierTwo/calibration.ts",
+    "eval:tier3": "tsx src/eval/tierThree/runner.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
