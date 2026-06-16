@@ -13,6 +13,7 @@
     "seed": "tsx src/fixtures/seed.ts",
     "ingest": "tsx src/rag/ingest.ts",
     "chat": "tsx src/cli/repl.ts",
+    "eval:tier1": "tsx src/eval/harness.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
