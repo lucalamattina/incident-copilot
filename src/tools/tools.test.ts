@@ -95,8 +95,12 @@ describe("structured query tools (integration)", () => {
   });
 
   describe("registry", () => {
-    it("exposes exactly the two read tools as valid Anthropic tool schemas", () => {
-      expect(TOOL_DEFINITIONS.map((t) => t.name).sort()).toEqual(["query_deploys", "query_logs"]);
+    it("exposes the read tools as valid Anthropic tool schemas", () => {
+      expect(TOOL_DEFINITIONS.map((t) => t.name).sort()).toEqual([
+        "query_deploys",
+        "query_logs",
+        "search_playbooks",
+      ]);
       for (const t of TOOL_DEFINITIONS) {
         expect(t.input_schema.type).toBe("object");
         expect(t.input_schema.properties).toBeDefined();
@@ -110,9 +114,9 @@ describe("structured query tools (integration)", () => {
     });
 
     it("dispatches by name and rejects unknown tools", async () => {
-      const rows = (await executeTool(db, "query_deploys", { limit: 1 })) as unknown[];
+      const rows = (await executeTool({ db }, "query_deploys", { limit: 1 })) as unknown[];
       expect(rows).toHaveLength(1);
-      await expect(executeTool(db, "drop_table", {})).rejects.toThrow(/Unknown tool/);
+      await expect(executeTool({ db }, "drop_table", {})).rejects.toThrow(/Unknown tool/);
     });
   });
 });
