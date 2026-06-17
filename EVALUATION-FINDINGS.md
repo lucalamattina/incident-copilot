@@ -1,6 +1,8 @@
 # IncidentCopilot: Evaluation Findings
 
-This document records what the evaluation harness actually found when run against the agent. The short version: the eval caught the agent confidently hallucinating, a single check would have missed it, and a targeted fix moved the metric in a measurable before/after. That loop is the point of the project.
+This document records what the evaluation harness actually found when run against the agent.
+
+The short version: pass-rate sampling caught the agent hallucinating a deploy timestamp (it reported 13:50 when its own retrieved data said 12:50) and inventing a cache-TTL mechanism that was never retrieved. A single judge pass had graded that same answer as passing. A targeted prompt fix then moved aggregate grounding from 0.60 to 0.80, measured before and after at N=10. A real defect in the agent, caught by its own eval and fixed with evidence: that loop is the point of the project, and it is the difference between "I built an eval harness" and "my eval harness caught my agent hallucinating and here is the diff that fixed it."
 
 All numbers below come from the eval CLIs (`npm run eval:tier1`, `eval:tier2`, `eval:tier2:calibrate`, `eval:tier3`) against `claude-sonnet-4-6` (agent) graded by `claude-opus-4-8` (judge).
 
@@ -36,7 +38,31 @@ This is exactly the argument the design makes for pass-rate sampling over a non-
 
 None of these are wild hallucinations, which is what makes them dangerous. An on-call engineer reading "the deploy at 13:50 changed TTLs" would trust it, and it is wrong.
 
-**The fix and the before/after.** The grounding instruction in the system prompt was tightened to target the three observed failures: quote timestamps and ids verbatim, do not introduce details or examples not in the retrieved data, and state causal links as hypotheses rather than settled fact. Measured before and after at N=10:
+**The fix and the before/after.** The grounding instruction in the system prompt was tightened to target the three observed failures: quote timestamps and ids verbatim, do not introduce details or examples not in the retrieved data, and state causal links as hypotheses rather than settled fact. The change was one paragraph of the prompt.
+
+Before:
+
+```
+Grounding: base every factual claim on data your tools actually returned. Do not
+invent deploys, log lines, versions, or timestamps. If you do not have the data
+to support a claim, query for it or say you do not know.
+```
+
+After:
+
+```
+Grounding (strict): base every factual claim only on data your tools actually
+returned, and reproduce specifics exactly. Quote timestamps, versions, deploy
+ids, and service names verbatim from the tool results; do not paraphrase, round,
+or adjust them (a deploy at 12:50 is not 13:50). Do not introduce details,
+mechanisms, tool or product names, or illustrative examples that are not present
+in the retrieved data. Distinguish what the data shows from what you infer:
+state causal links as hypotheses ("likely", "consistent with", "worth checking")
+unless a tool result directly establishes the link, never as settled fact. If
+you lack data for a claim, query for it or say you do not know.
+```
+
+Measured before and after at N=10:
 
 | case | metric | before | after |
 |---|---|---|---|

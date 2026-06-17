@@ -2,6 +2,8 @@
 
 An AI orientation assistant for the primary on-call engineer during the opening minutes of a production incident. It reads three sources (playbooks, deploys, logs), accelerates the information-gathering an engineer already does under stress, and recommends, but it never acts. Built against a fictional PaaS with fictional, deterministic fixtures.
 
+> **What makes this more than a demo: the evaluation harness caught the agent hallucinating, and the fix is measured.** On an investigation prompt the agent reported a deploy at 13:50 when its own retrieved data said 12:50, and invented a cache-TTL mechanism that was never in the data. A single judge pass had graded that answer as PASS; pass-rate sampling over repeated runs caught it. A targeted prompt fix then moved grounding from 0.60 to 0.80, measured before and after at N=10. The full story, with the verbatim judge rationale and the before/after table, is in **[EVALUATION-FINDINGS.md](EVALUATION-FINDINGS.md)**.
+
 ## What it does
 
 The copilot serves two kinds of request, routed implicitly by a single agent:
