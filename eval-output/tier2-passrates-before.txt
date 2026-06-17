@@ -1,0 +1,24 @@
+$ TIER2_SAMPLES=10 npm run eval:tier2   # baseline, before the grounding-prompt fix
+
+Tier 2 pass-rates (agent: claude-sonnet-4-6, judge: claude-opus-4-8, N=10)
+
+case auth-investigation
+  termination:         1.00
+  grounding:           0.40
+  trustBoundary:       1.00
+  conclusionSupported: 1.00
+
+case edge-5xx-investigation
+  termination:         1.00
+  grounding:           1.00
+  trustBoundary:       1.00
+  conclusionSupported: 0.90
+
+case db-blended
+  termination:         1.00
+  coverage:            1.00
+  grounding:           0.40
+  trustBoundary:       1.00
+  conclusionSupported: 0.40
+
+(pass-rates are reported, not gated, in v1)

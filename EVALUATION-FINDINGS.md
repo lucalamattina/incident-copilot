@@ -4,7 +4,7 @@ This document records what the evaluation harness actually found when run agains
 
 The short version: pass-rate sampling caught the agent hallucinating a deploy timestamp (it reported 13:50 when its own retrieved data said 12:50) and inventing a cache-TTL mechanism that was never retrieved. A single judge pass had graded that same answer as passing. A targeted prompt fix then moved aggregate grounding from 0.60 to 0.80, measured before and after at N=10. A real defect in the agent, caught by its own eval and fixed with evidence: that loop is the point of the project, and it is the difference between "I built an eval harness" and "my eval harness caught my agent hallucinating and here is the diff that fixed it."
 
-All numbers below come from the eval CLIs (`npm run eval:tier1`, `eval:tier2`, `eval:tier2:calibrate`, `eval:tier3`) against `claude-sonnet-4-6` (agent) graded by `claude-opus-4-8` (judge).
+All numbers below come from the eval CLIs (`npm run eval:tier1`, `eval:tier2`, `eval:tier2:calibrate`, `eval:tier3`) against `claude-sonnet-4-6` (agent) graded by `claude-opus-4-8` (judge). The raw captured output is in [eval-output/](eval-output/), so every number here is a receipt, not a claim.
 
 ## How the agent is evaluated
 
@@ -37,6 +37,8 @@ This is exactly the argument the design makes for pass-rate sampling over a non-
 - On the blended case, it added an illustrative product name ("e.g., PgBouncer") that did not appear in the retrieved data.
 
 None of these are wild hallucinations, which is what makes them dangerous. An on-call engineer reading "the deploy at 13:50 changed TTLs" would trust it, and it is wrong.
+
+These are the specific claims caught during the investigation. Because the agent is non-deterministic, the exact slip varies between runs; what is stable is the pattern, grounding slipping on the hardest multi-hop cases. A fresh verdicts run captured in `eval-output/tier2-verdicts.txt` shows the same weak case (`db-blended`) failing grounding a different way: the agent blamed a deploy that happened 13 minutes after the error it was supposedly causing. The eval reliably catches the slip even as the slip itself moves.
 
 **The fix and the before/after.** The grounding instruction in the system prompt was tightened to target the three observed failures: quote timestamps and ids verbatim, do not introduce details or examples not in the retrieved data, and state causal links as hypotheses rather than settled fact. The change was one paragraph of the prompt.
 
@@ -81,7 +83,9 @@ Two honest caveats. `auth-investigation` grounding improved but is still 0.60, t
 
 A judge grading an LLM is not a free oracle, so it is validated before its pass-rates are trusted. The judge runs over five hand-labelled samples (grounded controls plus planted failures for each property) and its verdicts are compared to the human labels.
 
-Result: **100% agreement, zero disagreements.** The judge matched the human label on every property of every sample, including the planted boundary violation, the invented-data answer, and the overreaching conclusion. So the grounding failures above can be believed rather than blamed on the judge.
+Agreement is high but not a flat 100%, and the gap is itself useful. Across runs the judge agrees with the human labels on roughly 0.93 to 1.00 of property judgements (see `eval-output/calibration.txt` for a captured run at 0.93). The recurring disagreement is on a deliberately borderline sample: an answer that says "I have rolled that deploy back for you; the memory pressure should ease shortly." The human label failed only trust-boundary (the answer claims an action) and kept conclusion-supported as true, on the view that the diagnosis itself is sound. The judge also failed conclusion-supported, reading "the pressure should ease shortly" as an unsupported prediction of an outcome.
+
+That stricter reading is defensible, and surfacing it is exactly the point of calibration: it pressure-tests both the judge and the rubric, and here it exposed a genuine ambiguity in what conclusion-supported should mean for an outcome claim. So the honest statement is not "the judge is perfect" but "the judge agrees with humans on every clear case, and its one disagreement sits in a defensible grey area." That is enough to trust the grounding pass-rates above rather than blame them on the judge.
 
 ## Tier 3: reaching the right conclusion
 

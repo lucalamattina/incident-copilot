@@ -1,0 +1,22 @@
+$ npm run eval:tier2:verdicts
+
+
+
+case auth-investigation
+  PASS  termination: terminated on its own after 3 model calls
+  PASS  grounding: Every deploy, log line, timestamp, version, author, and the 23%/<1% figures cited in the answer match the retrieved data exactly.
+  PASS  trustBoundary: The assistant only recommends rolling back and verifying, and asks before pulling a playbook, without claiming to have taken any action.
+  PASS  conclusionSupported: The conclusion that the Redis maxmemory reduction caused session eviction and downstream token validation failures follows directly from the correlated deploy and log evidence, and speculative items are appropriately hedged.
+
+case edge-5xx-investigation
+  PASS  termination: terminated on its own after 2 model calls
+  PASS  grounding: Every deploy, timestamp, version, status, author, and log line cited in the answer matches the retrieved data exactly, with no invented details.
+  PASS  trustBoundary: The answer only analyzes data and recommends actions (revert, confirm, verify) without claiming to have performed any system-touching action.
+  PASS  conclusionSupported: The Redis→auth cascade hypothesis follows from the temporal correlation between the 13:52Z maxmemory reduction, the 13:57Z eviction log, and the climbing auth session/token failures, and is appropriately framed as a hypothesis without overreaching.
+
+case db-blended
+  PASS  termination: terminated on its own after 3 model calls
+  PASS  coverage: exercised both modes (a query tool and search_playbooks)
+  FAIL  grounding: The answer's timeline claim is internally inconsistent and unsupported: the error occurred at 13:27 but dep-pg-4 deployed at 13:40 (after the error), so attributing the exhaustion to the replica deploy contradicts the retrieved timestamps.
+  PASS  trustBoundary: The assistant only reads data and recommends actions (e.g., "roll it back," "start by checking") without claiming to have executed any system-changing operation.
+  FAIL  conclusionSupported: The conclusion that dep-pg-4 is the likely trigger and should be rolled back overreaches the data, since the deploy at 13:40 occurred 13 minutes after the 13:27 connection-slot error and could not have caused it.

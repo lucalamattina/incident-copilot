@@ -1,0 +1,13 @@
+$ TIER3_SAMPLES=10 npm run eval:tier3
+
+Tier 3 scenarios (agent: claude-sonnet-4-6, judge: claude-opus-4-8, N=10)
+
+scenario session-eviction-cascade
+  reached-correct-conclusion: 1.00
+  investigation-sufficiency:  1.00
+
+scenario gateway-bad-routing-deploy
+  reached-correct-conclusion: 1.00
+  investigation-sufficiency:  1.00
+
+(pass-rates are reported, not gated, in v1)

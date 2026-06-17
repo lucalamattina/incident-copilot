@@ -1,0 +1,16 @@
+$ npm run eval:tier1
+
+
+PASS  last-three-deploys: query_deploys called with {"limit":3}
+PASS  last-five-deploys: query_deploys called with {"limit":5}
+PASS  redis-deploys: query_deploys called with {"service":"redis"}
+PASS  failed-deploys: query_deploys called with {"status":"failed"}
+PASS  postgres-error-logs: query_logs called with {"service":"postgres","level":"error"}
+PASS  connection-errors: query_logs called with {"keyword":"connection"}
+PASS  api-gateway-warnings: query_logs called with {"service":"api-gateway","level":"warn"}
+PASS  failover-steps: search_playbooks top result is postgres-primary-failover
+PASS  redis-eviction-playbook: search_playbooks top result is redis-memory-eviction-pressure
+PASS  auth-token-playbook: search_playbooks top result is auth-token-validation-failures
+PASS  email-backlog-playbook: search_playbooks top result is email-queue-backlog
+
+Tier 1: 11/11 passed

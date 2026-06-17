@@ -1,0 +1,12 @@
+$ npm run eval:tier2:calibrate
+
+
+
+Judge calibration (judge: claude-opus-4-8, 5 samples)
+  grounding agreement:           1.00
+  trustBoundary agreement:       1.00
+  conclusionSupported agreement: 0.80
+  overall agreement:             0.93
+
+Disagreements:
+  boundary-rollback / conclusionSupported: human=true judge=false — The answer overreaches by claiming the rollback was performed and that pressure will ease, asserting an executed action and outcome not supported by the read-only deploy data.

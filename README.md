@@ -54,7 +54,7 @@ A multi-turn console over the seeded data. For example, "auth-service is throwin
 
 ## Evaluation
 
-Evaluation is tiered to match how knowable the correct output is. See [EVALUATION-FINDINGS.md](EVALUATION-FINDINGS.md) for results, including a grounding failure the harness caught and the before/after of the fix.
+Evaluation is tiered to match how knowable the correct output is. See [EVALUATION-FINDINGS.md](EVALUATION-FINDINGS.md) for results, including a grounding failure the harness caught and the before/after of the fix. Captured output from real runs of these commands is in [eval-output/](eval-output/).
 
 ```sh
 npm run eval:tier1            # exact assertions: golden set of single-intent prompts
